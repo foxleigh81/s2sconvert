@@ -11,7 +11,7 @@ As this is a node package, Installation is easy! Just type `npm install sass2sty
 
 ## Usage
 
-### Batch file (default)
+### Batch file (default) / TODO
 sass2stylus-cli uses the command line to batch convert all files in the current working directory by default, so simply go to the directory containing your files and type:
 
 `s2sconvert`
@@ -21,17 +21,17 @@ If you only want to convert a single file then that's possible too, again go to 
 
 `s2sconvert -f 'filename.sass'`
 
-### Specify source directory
-You can also specify a directory if you want to use the tool from within something like gulp or grunt (or if you just can't be bothered to cd into the correct folder):
+### Specify source(input) directory
+You can also specify an input directory if you want to use the tool from within something like gulp or grunt (or if you just can't be bothered to cd into the correct folder):
 
 `s2sconvert -i '/path/to/files'`
 
-### Specify output directory
+### Specify output directory / TODO
 By default sass2stylus-cli just outputs the files in the existing directory, if you want to specify an output directory, use the following:
 
 `s2sconvert -o '/path/to/directory'`
 
-### Delete originals
+### Delete originals / TODO
 If you want to delete the source files automatically once they have been converted add the '-d' flag:
 
 `s2sconvert -d`

@@ -1,10 +1,13 @@
 {
-  "name": "sass2stylus",
+  "name": "s2sconvert",
   "version": "1.0.0",
   "description": "a tool to batch convert sass files to stylus files using the command line",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin" : {
+    "s2sconvert" : "./index.js"
   },
   "repository": {
     "type": "git",
