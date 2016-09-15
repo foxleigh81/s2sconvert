@@ -1,20 +1,33 @@
-var Curl = require( 'node-libcurl' ).Curl;
+var request = require('request'),
+    path = require('path'),
+    process = require('process'),
+    chalk = require('chalk'),
+    argv = require('yargs').argv,
+    fs = require('fs');
 
-var curl = new Curl();
+var formData = {
+    file: fs.createReadStream(__dirname + '/example.scss')
+}
 
-curl.setOpt( 'URL', 'www.google.com' );
-curl.setOpt( 'FOLLOWLOCATION', true );
+var cwd = argv.p ? argv.p : __dirname;
 
-curl.on( 'end', function( statusCode, body, headers ) {
+if(argv.f) {
+  // convert single file
+} else {
+  // convert all files in directory
+}
 
-    console.info( statusCode );
-    console.info( '---' );
-    console.info( body.length );
-    console.info( '---' );
-    console.info( this.getInfo( 'TOTAL_TIME' ) );
-
-    this.close();
-});
-
-curl.on( 'error', curl.close.bind( curl ) );
-curl.perform();
+request.post({
+  url: 'http://sass2stylus.com/api',
+  formData: formData
+}, function (err, httpResponse, body) {
+  if (err) {
+    return console.error(chalk.red('✘ Failed: ', err));
+  }
+  fs.writeFile("example.styl", body, function(err) {
+    if (err) {
+      return console.error(chalk.red('✘ Failed: ', err));
+    }
+    console.log(chalk.green('✔ The file was saved!'));
+  })
+})
