@@ -3,13 +3,20 @@
 var request = require('request'),
     path = require('path'),
     process = require('process'),
-    prompt = require('inquirer-promise'),
+    mkdirp = require('mkdirp'),
+    inquirer = require('inquirer-promise'),
     chalk = require('chalk'),
     argv = require('yargs').argv,
     fs = require('fs');
 
 var s2sconvert = (function() {
-
+  // Display intro message
+  console.log(chalk.magenta.bold.underline('Sass 2 Stylus CLI converter. V1.00 by Alex Ward.'+"\n"));
+  console.log('type \'s2sconvert -h\' for instructions.'+"\r\n");
+  if (argv.h) {
+    console.log(chalk.white('Sorry, help not implemented yet. :trollface:'));
+    process.exit(1);
+  }
   // The file converter method
   var convertFile = function(input, output, filename) {
     request.post({
@@ -17,19 +24,53 @@ var s2sconvert = (function() {
       formData: { file: fs.createReadStream(input) }
     }, function (err, httpResponse, body) {
       if (err) {
-        return console.error(chalk.red('✘ Failed: ', err));
+        return console.error(chalk.red('✘ Operation failed: ', err));
       }
       // Check the output directory exists and create it if not
       if (!fs.existsSync(output)){
-        fs.mkdirSync(output);
+        mkdirp(output);
       }
       fs.writeFile(output +'/'+ filename + '.styl', body, function(err) {
         if (err) {
-          return console.error(chalk.red('✘ Failed: ', err));
+          return console.error(chalk.red('✘ Operation failed: ', err));
         }
       })
     })
   }
+
+  // Generate a file list from a directory tree
+  var directory_spider = function(dir, file_list) {
+    console.log(chalk.yellow('Generating file list from ' + dir + '...'));
+    var files = fs.readdirSync(dir);
+    file_list = file_list || [];
+
+    files.forEach( function(file) {
+      if (fs.statSync(dir + '/' + file).isDirectory()) {
+        file_list = directory_spider(dir + '/' + file, file_list);
+       }
+       else {
+         if ((path.extname(dir + '/' + file) !== '.scss') || (path.extname(dir + '/' + file) !== '.scss'))  {
+           console.log(chalk.cyan(file, ' is not a valid sass file, skipping...'));
+         } else {
+           file_list.push(dir + '/' + file);
+         }
+       }
+    });
+
+    return file_list
+  }
+
+  // Loop through file list and process suitable files.
+  var file_processor = function(cwd) {
+    var file_list = directory_spider(cwd, file_list);
+    for (var i = 0; i < file_list.length; i++) {
+      var file = file_list[i];
+      console.log(chalk.blue('» currently processing ', file , ':'));
+      var noext = path.basename(file, path.extname(file)); // remove file extension
+      convertFile(file, output, noext);
+      console.log(chalk.green('✔ '+ output + '/' + noext +'.styl has been saved!'));
+    }
+  };
 
   // if an input file has been specified, use that if not use current directory
   var cwd = argv.i ? argv.i : process.cwd();
@@ -38,39 +79,22 @@ var s2sconvert = (function() {
   var output = argv.o ? argv.o : cwd;
 
   // convert single file if 'f' flag is present, otherwise convert all files in a directory
-  if(argv.f) {
-
+  if(argv.s) {
     // remove the file extension
-    var noext = argv.f.replace('.scss', '').replace('.sass', '');
-
-    convertFile(cwd +'/'+ argv.f, output, noext);
-    console.log(chalk.green('✔ The file was saved!'));
-
+    var noext = argv.s.replace('.scss', '').replace('.sass', '');
+    convertFile(cwd +'/'+ argv.s, output, noext);
+    console.log(chalk.green('✔ conversion complete!'));
   } else {
-    var proceed = false;
-    // allow user to disable prompting
-    if(!argv.np) {
+    // allow user to disable prompting (useful for task runners)
+    if(!argv.f) {
       // As this is an operation on a directory, show the directory this will
       // run in and confirm the user wishes to continue
-
-      prompt.confirm("Are you sure?")
+      inquirer.confirm( chalk.bgRed.white.bold(' WARNING!: ') + chalk.red(' This will convert ' + chalk.underline.bold('ALL') + ' Sass and SCSS files in ' + chalk.white.underline(cwd) + ' and ' + chalk.underline.bold('ALL') + ' subdirectories.') + "\n" + chalk.white(' Please type \'y\' if you wish to continue:'), { default: false } )
       .then( function(answers) {
         if (answers === true) {
-          files = fs.readdirSync(cwd);
-          files.forEach( function(file, index) {
-            console.log(chalk.blue('currently processing ', cwd +'/'+ file, ':'));
-            if (fs.statSync(cwd +'/'+ file).isDirectory()) {
-              // TODO: This needs to walk through the dir tree
-              console.log(chalk.magenta(file, ' is a directory, skipping...'));
-            } else if ((path.extname(file) !== '.scss') || (path.extname(file) !== '.scss'))  {
-              console.log(chalk.grey(file, ' is not a valid sass file, skipping...'));
-            } else {
-              // remove file extension
-              var noext = path.basename(file, path.extname(file))
-              convertFile(cwd +'/'+ file, output, noext);
-              console.log(chalk.green('✔ '+ output + '/' + noext +'.styl has been saved!'));
-            }
-          })
+          file_processor(cwd);
+        } else {
+          console.log(chalk.yellow('Conversion cancelled by user.'));
         }
       });
     }
