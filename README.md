@@ -22,12 +22,12 @@ If you only want to convert a single file then that's possible too, again go to 
 `s2sconvert -f 'filename.sass'`
 
 ### Specify source(input) directory
-You can also specify an input directory if you want to use the tool from within something like gulp or grunt (or if you just can't be bothered to cd into the correct folder):
+You can also specify an input directory if you want to use the tool from within something like gulp or grunt (or if you just can't be bothered to cd into the correct folder ):
 
 `s2sconvert -i '/path/to/files'`
 
 ### Specify output directory / TODO
-By default s2sconvert just outputs the files in the existing directory, if you want to specify an output directory, use the following:
+By default s2sconvert just outputs the files in the current directory, if you want to specify an output directory, use the following:
 
 `s2sconvert -o '/path/to/directory'`
 
