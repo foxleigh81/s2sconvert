@@ -3,6 +3,7 @@
 var request = require('request'),
     path = require('path'),
     process = require('process'),
+    prompt = require('inquirer-promise'),
     chalk = require('chalk'),
     argv = require('yargs').argv,
     fs = require('fs');
@@ -46,20 +47,32 @@ var s2sconvert = (function() {
     console.log(chalk.green('✔ The file was saved!'));
 
   } else {
-    files = fs.readdirSync(cwd);
-    files.forEach( function(file, index) {
-      console.log(chalk.blue('currently processing ', cwd +'/'+ file, ':'));
-      if (fs.statSync(cwd +'/'+ file).isDirectory()) {
-        console.log(chalk.magenta(file, ' is a directory, skipping...'));
-      } else if ((path.extname(file) !== '.scss') || (path.extname(file) !== '.scss'))  {
-        console.log(chalk.yellow(file, ' is not a valid sass file, skipping...'));
-      } else {
-        // remove file extension
-        var noext = path.basename(file, path.extname(file))
-        convertFile(cwd +'/'+ file, output, noext);
-        console.log(chalk.green('✔ '+ output + '/' + noext +'.styl has been saved!'));
-      }
-    })
-  }
+    var proceed = false;
+    // allow user to disable prompting
+    if(!argv.np) {
+      // As this is an operation on a directory, show the directory this will
+      // run in and confirm the user wishes to continue
 
+      prompt.confirm("Are you sure?")
+      .then( function(answers) {
+        if (answers === true) {
+          files = fs.readdirSync(cwd);
+          files.forEach( function(file, index) {
+            console.log(chalk.blue('currently processing ', cwd +'/'+ file, ':'));
+            if (fs.statSync(cwd +'/'+ file).isDirectory()) {
+              // TODO: This needs to walk through the dir tree
+              console.log(chalk.magenta(file, ' is a directory, skipping...'));
+            } else if ((path.extname(file) !== '.scss') || (path.extname(file) !== '.scss'))  {
+              console.log(chalk.grey(file, ' is not a valid sass file, skipping...'));
+            } else {
+              // remove file extension
+              var noext = path.basename(file, path.extname(file))
+              convertFile(cwd +'/'+ file, output, noext);
+              console.log(chalk.green('✔ '+ output + '/' + noext +'.styl has been saved!'));
+            }
+          })
+        }
+      });
+    }
+  }
 })();

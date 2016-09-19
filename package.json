@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "bin" : {
-    "s2sconvert" : "./index.js"
+  "bin": {
+    "s2sconvert": "./index.js"
   },
   "repository": {
     "type": "git",
@@ -22,9 +22,11 @@
   "dependencies": {
     "chalk": "1.1.3",
     "del": "2.2.2",
+    "inquirer-promise": "0.0.3",
     "jasmine-core": "^2.4.1",
     "karma": "^1.3.0",
     "karma-jasmine": "^1.0.2",
+    "prompt": "^1.0.0",
     "request": "^2.74.0",
     "yargs": "^5.0.0"
   }
