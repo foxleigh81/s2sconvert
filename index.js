@@ -11,9 +11,11 @@ var request = require('request'),
 
 var s2sconvert = (function() {
   // Display intro message
-  console.log(chalk.magenta.bold.underline('Sass 2 Stylus CLI converter. V1.00 by Alex Ward.'+"\n"));
-  console.log('type \'s2sconvert -h\' for instructions.'+"\r\n");
+  console.log(chalk.magenta.bold.underline('Sass 2 Stylus CLI converter. V1.00 by Alex Ward.', "\n"));
+  console.log(chalk.bgYellow.white.bold(' Notice ') + chalk.yellow(' This package currently requires an internet connection to function')+"\r\n");
+  console.log('type \'s2sconvert -h\' for instructions.', "\r\n");
   if (argv.h) {
+    // TODO: Add help info
     console.log(chalk.white('Sorry, help not implemented yet. :trollface:'));
     process.exit(1);
   }
@@ -26,21 +28,52 @@ var s2sconvert = (function() {
       if (err) {
         return console.error(chalk.red('✘ Operation failed: ', err));
       }
-      // Check the output directory exists and create it if not
-      if (!fs.existsSync(output)){
-        mkdirp(output);
+
+      var directory = path.dirname(input).split('/');
+
+      if (directory.length > 1) {
+        directory = directory.pop();
+      } else {
+        directory = null;
       }
-      fs.writeFile(output +'/'+ filename + '.styl', body, function(err) {
-        if (err) {
-          return console.error(chalk.red('✘ Operation failed: ', err));
+
+      // Check the output directory exists and create it if not
+      if (!fs.existsSync(output)) {
+        console.log(chalk.magenta(output, 'not found, creating new directory...'))
+        mkdirp(output);
+      } else {
+        console.log(chalk.cyan( output, 'found, copying into existing directory'))
+      }
+
+      //Also check that each subdirectory exists, if not create one.
+      if(directory) {
+        if (!fs.existsSync(output + '/' + directory)) {
+          console.log(chalk.magenta(output + '/' + directory, ' not found, creating new directory...'))
+          mkdirp(output + '/' + directory);
+        } else {
+          console.log(chalk.cyan(output + '/' + directory, 'found, copying into existing directory'))
         }
-      })
+        fs.writeFile(output + '/' + directory +'/'+ filename + '.styl', body, function(err) {
+          if (err) {
+            return console.error(chalk.red('✘ Operation failed: ', err));
+          }
+        })
+      } else {
+        fs.writeFile(output + '/' + filename + '.styl', body, function(err) {
+          if (err) {
+            return console.error(chalk.red('✘ Operation failed: '), err);
+          }
+        })
+      }
+
+
+
     })
   }
 
   // Generate a file list from a directory tree
   var directory_spider = function(dir, file_list) {
-    console.log(chalk.yellow('Generating file list from ' + dir + '...'));
+    console.log(chalk.yellow('Generating file list from ', dir, '...'));
     var files = fs.readdirSync(dir);
     file_list = file_list || [];
 
@@ -68,7 +101,7 @@ var s2sconvert = (function() {
       console.log(chalk.blue('» currently processing ', file , ':'));
       var noext = path.basename(file, path.extname(file)); // remove file extension
       convertFile(file, output, noext);
-      console.log(chalk.green('✔ '+ output + '/' + noext +'.styl has been saved!'));
+      console.log(chalk.green('✔ ', output, '/', noext, '.styl has been saved!'));
     }
   };
 
@@ -97,6 +130,8 @@ var s2sconvert = (function() {
           console.log(chalk.yellow('Conversion cancelled by user.'));
         }
       });
+    } else {
+      file_processor(cwd);
     }
   }
 })();
