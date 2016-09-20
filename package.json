@@ -1,6 +1,6 @@
 {
   "name": "s2sconvert",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A tool to batch convert sass files to stylus files using the command line",
   "main": "index.js",
   "scripts": {
