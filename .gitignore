@@ -1,3 +1,12 @@
+# OS files
+.DS_Store
+
+# Make sure I don't commit any test files
+.sass
+.scss
+.stylus
+.css
+
 # Logs
 logs
 *.log
