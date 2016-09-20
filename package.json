@@ -1,6 +1,6 @@
 {
   "name": "s2sconvert",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A tool to batch convert sass files to stylus files using the command line",
   "main": "index.js",
   "scripts": {
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alexward1981/sass2stylus.git"
+    "url": "git+https://github.com/alexward1981/s2sconvert.git"
   },
   "author": "Alex Ward",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/alexward1981/sass2stylus/issues"
+    "url": "https://github.com/alexward1981/s2sconvert/issues"
   },
-  "homepage": "https://github.com/alexward1981/sass2stylus#readme",
+  "homepage": "https://github.com/alexward1981/s2sconvert#readme",
   "dependencies": {
     "chalk": "1.1.3",
     "inquirer-promise": "0.0.3",
