@@ -59,10 +59,6 @@ Show the help, pretty self-explanatory really.
 
 Longform argument: --help
 
-Warning: The prompts are there to prevent you from accidentally converting files in the wrong directory, as this tool converts subdirectories as well, it could convert every sass file on your computer if used in the wrong place (your root directory for example). Use this at your own risk.
-
 ## Roadmap
 
-- Remove dependency on sass2stylus api as this currently requires an internet connection to perform the conversion
-- Create a gulp wrapper
 - Add some unit tests to ensure future releases are robust
